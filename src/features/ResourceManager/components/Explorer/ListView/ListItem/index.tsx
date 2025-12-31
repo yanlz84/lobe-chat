@@ -1,4 +1,4 @@
-import { Button, Center, Checkbox, Flexbox, Icon } from '@lobehub/ui';
+import { Button, Center, Checkbox, Flexbox, Icon, showContextMenu } from '@lobehub/ui';
 import { App, Input } from 'antd';
 import { createStaticStyles, cssVar, cx } from 'antd-style';
 import dayjs from 'dayjs';
@@ -23,6 +23,7 @@ import { formatSize } from '@/utils/format';
 import { isChunkingUnsupported } from '@/utils/isChunkingUnsupported';
 
 import DropdownMenu from '../../ItemDropdown/DropdownMenu';
+import { useFileItemDropdown } from '../../ItemDropdown/useFileItemDropdown';
 import ChunksBadge from './ChunkTag';
 
 dayjs.extend(relativeTime);
@@ -37,10 +38,10 @@ const styles = createStaticStyles(({ css }) => {
 
       &:hover {
         background: ${cssVar.colorFillTertiary};
+      }
 
-        .file-list-item-hover {
-          opacity: 1;
-        }
+      &:has([data-popup-open]) {
+        background: ${cssVar.colorFillTertiary};
       }
     `,
 
@@ -58,12 +59,18 @@ const styles = createStaticStyles(({ css }) => {
       opacity: 0.5;
     `,
 
-    hover: cx(
-      'file-list-item-hover',
-      css`
-        opacity: 0;
-      `,
-    ),
+    hover: css`
+      opacity: 0;
+
+      &[data-popup-open],
+      .file-list-item-group:hover & {
+        opacity: 1;
+      }
+
+      &[data-popup-open] {
+        background: ${cssVar.colorFillTertiary};
+      }
+    `,
     item: css`
       padding-block: 0;
       padding-inline: 0 24px;
@@ -324,11 +331,22 @@ const FileListItem = memo<FileListItemProps>(
       }
     }, [pendingRenameItemId, id, isFolder, resourceManagerState]);
 
+    const { menuItems } = useFileItemDropdown({
+      fileType,
+      filename: name,
+      id,
+      knowledgeBaseId: resourceManagerState.libraryId,
+      onRenameStart: isFolder ? handleRenameStart : undefined,
+      sourceType,
+      url,
+    });
+
     return (
       <Flexbox
         align={'center'}
         className={cx(
           styles.container,
+          'file-list-item-group',
           selected && styles.selected,
           isDragging && styles.dragging,
           isOver && styles.dragOver,
@@ -338,6 +356,10 @@ const FileListItem = memo<FileListItemProps>(
         draggable={!!resourceManagerState.libraryId}
         height={48}
         horizontal
+        onContextMenu={(e) => {
+          e.preventDefault();
+          showContextMenu(menuItems());
+        }}
         onDragEnd={handleDragEnd}
         onDragLeave={handleDragLeave}
         onDragOver={handleDragOver}
@@ -463,17 +485,7 @@ const FileListItem = memo<FileListItemProps>(
                   />
                 </div>
               ))}
-            <div className={styles.hover}>
-              <DropdownMenu
-                fileType={fileType}
-                filename={name}
-                id={id}
-                knowledgeBaseId={resourceManagerState.libraryId}
-                onRenameStart={isFolder ? handleRenameStart : undefined}
-                sourceType={sourceType}
-                url={url}
-              />
-            </div>
+            <DropdownMenu className={styles.hover} items={menuItems} />
           </Flexbox>
         </Flexbox>
         {!isDragging && (

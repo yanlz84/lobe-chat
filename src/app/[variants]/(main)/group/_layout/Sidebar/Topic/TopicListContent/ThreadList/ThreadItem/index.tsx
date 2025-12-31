@@ -1,4 +1,4 @@
-import { Dropdown, Icon } from '@lobehub/ui';
+import { Icon, showContextMenu } from '@lobehub/ui';
 import { TreeDownRightIcon } from '@lobehub/ui/icons';
 import { cssVar } from 'antd-style';
 import { memo, useCallback } from 'react';
@@ -46,23 +46,18 @@ const ThreadItem = memo<ThreadItemProps>(({ title, id }) => {
 
   return (
     <>
-      <Dropdown
-        menu={{
-          items: dropdownMenu,
+      <NavItem
+        actions={<Actions dropdownMenu={dropdownMenu} />}
+        active={active && !isInAgentSubRoute}
+        disabled={editing}
+        icon={<Icon color={cssVar.colorTextDescription} icon={TreeDownRightIcon} size={'small'} />}
+        onClick={handleClick}
+        onContextMenu={(e) => {
+          e.preventDefault();
+          showContextMenu(dropdownMenu);
         }}
-        trigger={['contextMenu']}
-      >
-        <NavItem
-          actions={<Actions dropdownMenu={dropdownMenu} />}
-          active={active && !isInAgentSubRoute}
-          disabled={editing}
-          icon={
-            <Icon color={cssVar.colorTextDescription} icon={TreeDownRightIcon} size={'small'} />
-          }
-          onClick={handleClick}
-          title={title}
-        />
-      </Dropdown>
+        title={title}
+      />
       <Editing id={id} title={title} toggleEditing={toggleEditing} />
     </>
   );

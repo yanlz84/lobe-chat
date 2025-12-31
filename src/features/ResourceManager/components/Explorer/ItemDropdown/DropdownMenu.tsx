@@ -1,42 +1,28 @@
-import { ActionIcon, Dropdown } from '@lobehub/ui';
+import { ActionIcon, DropdownMenuV2 } from '@lobehub/ui';
+import { createStaticStyles, css, cx } from 'antd-style';
+import { type ItemType } from 'antd/es/menu/interface';
 import { MoreHorizontalIcon } from 'lucide-react';
-import { memo, useState } from 'react';
-
-import { useFileItemDropdown } from './useFileItemDropdown';
+import { memo } from 'react';
 
 interface DropdownMenuProps {
-  fileType: string;
-  filename: string;
-  id: string;
-  knowledgeBaseId?: string;
-  onRenameStart?: () => void;
-  sourceType?: string;
-  url: string;
+  className?: string;
+  items: ItemType[] | (() => ItemType[]);
 }
 
-const DropdownMenu = memo<DropdownMenuProps>(
-  ({ id, knowledgeBaseId, url, filename, fileType, sourceType, onRenameStart }) => {
-    const [isOpen, setIsOpen] = useState(false);
+const styles = createStaticStyles(({ cssVar }) => ({
+  container: css`
+    &:has([data-popup-open]) {
+      background-color: ${cssVar.colorFillTertiary};
+    }
+  `,
+}));
 
-    // Only compute dropdown items when dropdown is actually open
-    // This prevents expensive hook execution for all 20-25 visible items
-    const { menuItems } = useFileItemDropdown({
-      enabled: isOpen,
-      fileType,
-      filename,
-      id,
-      knowledgeBaseId,
-      onRenameStart,
-      sourceType,
-      url,
-    });
-
-    return (
-      <Dropdown menu={{ items: menuItems }} onOpenChange={setIsOpen} open={isOpen}>
-        <ActionIcon icon={MoreHorizontalIcon} size={'small'} />
-      </Dropdown>
-    );
-  },
-);
+const DropdownMenu = memo<DropdownMenuProps>(({ items, className }) => {
+  return (
+    <DropdownMenuV2 items={items} triggerProps={{ className: cx(styles.container) }}>
+      <ActionIcon className={className} icon={MoreHorizontalIcon} size={'small'} />
+    </DropdownMenuV2>
+  );
+});
 
 export default DropdownMenu;

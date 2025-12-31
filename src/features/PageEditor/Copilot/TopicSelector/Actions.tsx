@@ -1,4 +1,4 @@
-import { ActionIcon, Dropdown, type MenuProps } from '@lobehub/ui';
+import { ActionIcon, DropdownMenuV2, type MenuProps } from '@lobehub/ui';
 import { MoreHorizontalIcon } from 'lucide-react';
 import { memo } from 'react';
 
@@ -10,18 +10,9 @@ const Actions = memo<ActionsProps>(({ dropdownMenu }) => {
   if (!dropdownMenu || dropdownMenu.length === 0) return null;
 
   return (
-    <Dropdown
-      arrow={false}
-      menu={{
-        items: dropdownMenu,
-        onClick: ({ domEvent }) => {
-          domEvent.stopPropagation();
-        },
-      }}
-      trigger={['click']}
-    >
+    <DropdownMenuV2 items={dropdownMenu}>
       <ActionIcon icon={MoreHorizontalIcon} size={'small'} />
-    </Dropdown>
+    </DropdownMenuV2>
   );
 });
 

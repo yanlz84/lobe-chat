@@ -13,11 +13,21 @@ const styles = createStaticStyles(({ css }) => ({
     overflow: hidden;
     min-width: 32px;
 
+    &:has([data-popup-open]) {
+      background: ${cssVar.colorFillTertiary};
+    }
+
     .${ACTION_CLASS_NAME} {
       width: 0;
       margin-inline-end: 2px;
       opacity: 0;
       transition: opacity 0.2s ${cssVar.motionEaseOut};
+
+      &:has([data-popup-open]) {
+        width: unset;
+        opacity: 1;
+        background: ${cssVar.colorFillTertiary};
+      }
     }
 
     &:hover {

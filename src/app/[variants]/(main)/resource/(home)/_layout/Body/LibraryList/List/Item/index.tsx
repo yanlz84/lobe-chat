@@ -1,5 +1,4 @@
-import { Icon, type MenuProps } from '@lobehub/ui';
-import { Dropdown } from '@lobehub/ui';
+import { Icon, type MenuProps, showContextMenu } from '@lobehub/ui';
 import { cssVar } from 'antd-style';
 import { Loader2Icon } from 'lucide-react';
 import React, { type CSSProperties, memo, useCallback, useMemo } from 'react';
@@ -73,26 +72,23 @@ const KnowledgeBaseItem = memo<KnowledgeBaseItemProps>(({ id, name, active, styl
 
   return (
     <>
-      <Dropdown
-        menu={{
-          items: dropdownMenu,
+      <NavItem
+        actions={<Actions dropdownMenu={dropdownMenu} />}
+        active={active}
+        className={className}
+        disabled={editing}
+        icon={icon}
+        key={id}
+        loading={isLoading}
+        onClick={handleClick}
+        onContextMenu={(e) => {
+          e.preventDefault();
+          showContextMenu(dropdownMenu);
         }}
-        trigger={['contextMenu']}
-      >
-        <NavItem
-          actions={<Actions dropdownMenu={dropdownMenu} />}
-          active={active}
-          className={className}
-          disabled={editing}
-          icon={icon}
-          key={id}
-          loading={isLoading}
-          onClick={handleClick}
-          onDoubleClick={handleDoubleClick}
-          style={style}
-          title={name}
-        />
-      </Dropdown>
+        onDoubleClick={handleDoubleClick}
+        style={style}
+        title={name}
+      />
       <Editing id={id} name={name} toggleEditing={toggleEditing} />
     </>
   );

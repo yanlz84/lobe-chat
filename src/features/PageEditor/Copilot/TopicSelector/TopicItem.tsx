@@ -1,3 +1,4 @@
+import { showContextMenu } from '@lobehub/ui';
 import { memo } from 'react';
 import { useTranslation } from 'react-i18next';
 
@@ -31,6 +32,10 @@ const TopicItem = memo<TopicItemProps>(
         onClick={() => {
           onTopicChange(topicId);
           onClose();
+        }}
+        onContextMenu={(e) => {
+          e.preventDefault();
+          showContextMenu(dropdownMenu);
         }}
         style={{ flexShrink: 0 }}
         title={topicTitle || t('untitled', { defaultValue: 'Untitled' })}
